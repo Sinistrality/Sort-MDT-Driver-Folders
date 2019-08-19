@@ -6,8 +6,9 @@
 #______________________________________________________________________________________________________
 #Author: Mike Kisiel 
 #Contributors:
-#Latest Update: 8/16/2019
+#Latest Update: 8/19/2019
 #Patch Notes:
+#v1.0.1 - Added file backup feature.
 #v1.0 - Release version
 #______________________________________________________________________________________________________
 
@@ -17,12 +18,34 @@ $FileToEdit = "C:\DeploymentShare$\Control\DriverGroups.xml"
 #Set the export path where you want the new file to go.
 $exportPath = "C:\DeploymentShare$\Control\DriverGroups.xml"
 
+##Set back up options - A file will be created with the date appended to the file name in the directory you set.
+#Turn the back up file feature On/Off (Off by default)
+$BackupFileOn = $false
+#Set the folder where you want the backups to go
+$BackupFolderPath = 'C:\DeploymentShare$\Control\DriverGroups\'
+
 #Exits the program if it is unable to read/find the file.
 Try{[xml]$xml = get-content $FileToEdit -ErrorAction Stop}
 Catch{
 Write-Host "Could not access path $FileToEdit. Check your path/access rights." -ForegroundColor Yellow
 Exit
 }
+
+#Backup original file
+If ($BackupFileOn -eq $true){
+    #Copy the original file to the specified folder and append a data value to its name. 
+     If (Test-Path -Path $BackupFolderPath){
+        #Copys the file
+        Try{Copy-Item $FileToEdit -Destination $BackupFolderPath\DriverGroups$((Get-Date).ToString('MM-dd-yyyy')).xml -Force -ErrorAction Stop}   
+        catch{Write-Host "Could not access path $BackupFolderPath. Check your path/access rights." -ForegroundColor Yellow}
+    }Else{ 
+        #Creates directory if it doesn't exist then copys the file.
+        Try{New-Item -ItemType 'Directory' -Path $BackupFolderPath -ErrorAction Stop | Out-Null
+        Copy-Item $FileToEdit -Destination $BackupFolderPath\DriverGroups$((Get-Date).ToString('MM-dd-yyyy')).xml -Force -ErrorAction Stop}
+        Catch{Write-Host "Could not move file to $BackupFolderPath"}
+    }
+}
+
 
 #Create the list objects we'll be using
 $GroupList = New-Object System.Collections.Generic.List[System.Object]
