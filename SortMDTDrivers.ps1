@@ -36,12 +36,12 @@ If ($BackupFileOn -eq $true){
     #Copy the original file to the specified folder and append a data value to its name. 
      If (Test-Path -Path $BackupFolderPath){
         #Copys the file
-        Try{Copy-Item $FileToEdit -Destination $BackupFolderPath\DriverGroups$((Get-Date).ToString('yyyy-dd-MM')).xml -Force -ErrorAction Stop}   
+        Try{Copy-Item $FileToEdit -Destination $BackupFolderPath\DriverGroups$((Get-Date).ToString('yyyy-MM-dd')).xml -Force -ErrorAction Stop}   
         catch{Write-Host "Could not access path $BackupFolderPath. Check your path/access rights." -ForegroundColor Yellow}
     }Else{ 
         #Creates directory if it doesn't exist then copys the file.
         Try{New-Item -ItemType 'Directory' -Path $BackupFolderPath -ErrorAction Stop | Out-Null
-        Copy-Item $FileToEdit -Destination $BackupFolderPath\DriverGroups$((Get-Date).ToString('yyyy-dd-MM')).xml -Force -ErrorAction Stop}
+        Copy-Item $FileToEdit -Destination $BackupFolderPath\DriverGroups$((Get-Date).ToString('yyyy-MM-dd')).xml -Force -ErrorAction Stop}
         Catch{Write-Host "Could not move file to $BackupFolderPath"}
     }
 }
